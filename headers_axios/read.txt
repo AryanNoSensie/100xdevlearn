@@ -1,1 +1,2 @@
 in this i a building header , query , params , and alsko uosng fetch and axios in this !!
+i am just typigng to understand how i am doing right now 
