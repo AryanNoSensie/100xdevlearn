@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
+</head>
+
+<script>
+    async function signup() {
+        try {
+            const username = document.getElementById("signup-username").value;    
+            const password = document.getElementById("signup-password").value;
+
+            await axios.post("http://localhost:3000/signup", {
+                username: username,
+                password: password
+            });
+            alert("User created successfully");
+        } catch (error) {
+            alert("Signup failed: " + error.message);
+        }
+    }
+
+    async function signin() {
+        try {
+            const username = document.getElementById("signin-username").value;    
+            const password = document.getElementById("signin-password").value;
+
+            const response = await axios.post("http://localhost:3000/signin", {
+                username: username,
+                password: password
+            });
+            localStorage.setItem("token", response.data.token);
+            alert("User signed in successfully");
+            // Fetch user info after successful signin
+            await getuserinfo();
+        } catch (error) {
+            alert("Signin failed: " + error.message);
+        }
+    }
+
+    async function getuserinfo() {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                document.getElementById("information").innerHTML = "Please sign in first";
+                return;
+            }
+
+            const response = await axios.get("http://localhost:3000/me", {
+                headers: {
+                    token: token
+                }
+            });
+            document.getElementById("information").innerHTML = 
+                `Username: ${response.data.username}<br>Password: ${response.data.password}`;
+        } catch (error) {
+            document.getElementById("information").innerHTML = "Error fetching user info";
+            console.error(error);
+        }
+    }
+
+    async function logout() {
+        localStorage.removeItem("token");
+        document.getElementById("information").innerHTML = "Logged out";
+    }
+
+    // Only call getuserinfo on page load if there's a token
+    if (localStorage.getItem("token")) {
+        getuserinfo();
+    }
+</script>
+<body>
+   <div>  
+    Signup
+    <input id ="signup-username" type="text" name="username" placeholder="Username">
+    <input id ="signup-password" type="password" name="password" placeholder="Password">
+    <button onclick="signup()">Submit</button>
+</div>
+<div>
+    Signin
+    <input id ="signin-username" type="text" name="username" placeholder="Username">
+    <input id ="signin-password" type="password" name="password" placeholder="Password">
+    <button onclick="signin()">Submit</button>
+</div>
+<div>
+    User information: 
+    <div id="information"></div>
+</div>
+<div>
+    <button onclick="logout()">Logout</button>
+</div>
+</body>
+</html>
