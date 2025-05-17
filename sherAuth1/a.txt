@@ -1,0 +1,5 @@
+app.get('/elf', (req, res) => {
+ bcrypt.compare("aryanisgreat", "$2b$10$2A4KM1aoKIewfw8Q3k3.QOG2QJrbhHLaRjZ0s9bgDldaasmqjIUfG", function(err, result) {
+    // result == truecons
+    console.log(result);
+});
